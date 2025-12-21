@@ -29,17 +29,13 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (data) => {
         const response = await api.post('/auth/signup', data);
-        return response.data;
-    };
-
-    const verifyOtp = async (email, otp) => {
-        const response = await api.post('/auth/verify-otp', { email, otp });
         const { token, user } = response.data;
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
         setUser(user);
         return user;
     };
+
 
     const logout = () => {
         localStorage.removeItem('token');
