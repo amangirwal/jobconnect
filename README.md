@@ -29,13 +29,9 @@ Before running the project, ensure you have the following installed:
 
 Follow these steps to set up and run the project locally.
 
-### 1. Clone Repository
+## Setup Instructions
 
-```bash
-git clone https://github.com/amangirwal/jobconnect.git
-cd jobconnect
-x
-### 1. Database Setup
+### Database Setup
 
 1. Open your MySQL terminal or Workbench.
 2. Create the database:
@@ -43,6 +39,12 @@ x
    CREATE DATABASE jobportal;
    ```
 
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/amangirwal/jobconnect.git
+cd jobconnect
+```
 ### 2. Backend Setup
 
 1. Navigate to the backend directory:
