@@ -1,4 +1,4 @@
-# JobConnect - Job Portal
+# JobConnect 
 
 A full-stack Job Portal application built with the MERN stack (MySQL, Express, React, Node.js).
 
@@ -35,12 +35,6 @@ Follow these steps to set up and run the project locally.
 2. Create the database:
    ```sql
    CREATE DATABASE jobportal;
-   ```
-3. (Optional) Create a specific user or use your existing root user. If creating a new user:
-   ```sql
-   CREATE USER 'jobuser'@'localhost' IDENTIFIED BY 'your_password';
-   GRANT ALL PRIVILEGES ON jobportal.* TO 'jobuser'@'localhost';
-   FLUSH PRIVILEGES;
    ```
 
 ### 2. Backend Setup
@@ -95,12 +89,6 @@ Follow these steps to set up and run the project locally.
    npm install
    ```
 
-3. (Optional) Configure Environment Variables:
-   - The frontend is configured to talk to `http://localhost:3000/api` by default.
-   - If your backend runs on a different port, create a `.env` file in `frontend`:
-     ```env
-     VITE_API_URL=http://localhost:3000/api
-     ```
 
 4. Start the Frontend Application:
    ```bash
