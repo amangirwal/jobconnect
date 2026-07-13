@@ -9,6 +9,7 @@ const Landing = () => {
     const { user } = useAuth();
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [focusedField, setFocusedField] = useState(null);
     const [filters, setFilters] = useState({
         keyword: '',
         location: '',
@@ -56,70 +57,73 @@ const Landing = () => {
     return (
         <div className="min-h-screen font-sans">
             {/* Hero & Search Section */}
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-                <div className="bg-gradient-to-br from-indigo-950 via-indigo-900 to-purple-950 text-white rounded-3xl shadow-xl relative overflow-hidden">
+            <div className="w-full max-w-7xl mx-auto px-6 mt-6">
+                <div 
+                    className="text-white rounded-3xl shadow-xl relative overflow-hidden"
+                    style={{ background: 'linear-gradient(135deg, #4338CA 0%, #6D28D9 50%, #7E22CE 100%)' }}
+                >
                     <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-15 brightness-100 contrast-150 mix-blend-overlay"></div>
                     <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-purple-500/20 rounded-full mix-blend-screen filter blur-3xl animate-blob"></div>
                     <div className="absolute -bottom-32 -left-20 w-96 h-96 bg-indigo-500/20 rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-2000"></div>
 
-                    <div className="max-w-4xl mx-auto px-6 sm:px-12 py-12 md:py-16 relative z-10 text-center flex flex-col items-center">
+                    <div className="max-w-4xl mx-auto px-6 sm:px-12 pt-[60px] pb-[64px] relative z-10 text-center flex flex-col items-center">
                         {/* Pill badge above heading */}
-                        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-indigo-100 text-xs font-semibold mb-6 tracking-wide shadow-inner">
+                        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-indigo-100 text-xs font-semibold mb-4 tracking-wide shadow-inner">
                             Discover your next opportunity
                         </div>
 
                         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4 animate-slide-up leading-tight">
-                            Find Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-350 via-amber-300 to-orange-400">Dream Job</span> Today
+                            Find Your <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, #FACC15 0%, #FB923C 100%)' }}>Dream Job</span> Today
                         </h1>
                         <p className="text-indigo-100/80 text-base md:text-lg max-w-2xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
                             Connect with top companies and startups. Your next career move is just a search away.
                         </p>
 
                         {/* Search Bar: Unified Card */}
-                        <div className="w-full bg-white p-2 rounded-2xl shadow-2xl border border-gray-100/50 animate-fade-in relative z-20" style={{ animationDelay: '0.2s' }}>
-                            <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-center divide-y md:divide-y-0 md:divide-x divide-gray-150 gap-2 md:gap-0">
+                        <div className="w-full max-w-[920px] mx-auto bg-white p-2 rounded-2xl shadow-2xl border border-gray-250/20 animate-fade-in relative z-20" style={{ animationDelay: '0.2s' }}>
+                            <form onSubmit={handleSearch} className="flex flex-col md:grid md:grid-cols-[minmax(260px,_1.5fr)_minmax(180px,_1fr)_minmax(160px,_0.8fr)_auto] gap-2 md:gap-0 items-center justify-between w-full">
                                 {/* Keyword */}
-                                <div className="relative flex-grow w-full group py-2 md:py-0 md:px-4">
-                                    <div className="absolute inset-y-0 left-0 md:left-4 pl-3 flex items-center pointer-events-none">
-                                        <Search className="h-5 w-5 text-gray-400" />
-                                    </div>
+                                <div className={`relative flex items-center h-full w-full py-2 md:py-0 md:px-4 md:border-r border-gray-200 transition-colors duration-200 rounded-l-xl ${focusedField === 'keyword' ? 'bg-indigo-50/20' : ''}`}>
+                                    <Search className={`h-5 w-5 shrink-0 transition-colors duration-200 ${focusedField === 'keyword' ? 'text-indigo-650' : 'text-gray-400'}`} />
                                     <input
                                         type="text"
                                         name="keyword"
                                         placeholder="Job title or keyword"
                                         value={filters.keyword}
                                         onChange={handleFilterChange}
-                                        className="block w-full pl-10 pr-3 py-3 border-none bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 text-sm"
+                                        onFocus={() => setFocusedField('keyword')}
+                                        onBlur={() => setFocusedField(null)}
+                                        className="block w-full pl-3 pr-2 py-3 border-none bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 text-sm"
                                     />
                                 </div>
 
                                 {/* Location */}
-                                <div className="relative w-full md:w-1/4 group py-2 md:py-0 md:px-4">
-                                    <div className="absolute inset-y-0 left-0 md:left-4 pl-3 flex items-center pointer-events-none">
-                                        <MapPin className="h-5 w-5 text-gray-400" />
-                                    </div>
+                                <div className={`relative flex items-center h-full w-full py-2 md:py-0 md:px-4 md:border-r border-gray-200 transition-colors duration-200 ${focusedField === 'location' ? 'bg-indigo-50/20' : ''}`}>
+                                    <MapPin className={`h-5 w-5 shrink-0 transition-colors duration-200 ${focusedField === 'location' ? 'text-indigo-650' : 'text-gray-400'}`} />
                                     <input
                                         type="text"
                                         name="location"
                                         placeholder="Location"
                                         value={filters.location}
                                         onChange={handleFilterChange}
-                                        className="block w-full pl-10 pr-3 py-3 border-none bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 text-sm"
+                                        onFocus={() => setFocusedField('location')}
+                                        onBlur={() => setFocusedField(null)}
+                                        className="block w-full pl-3 pr-2 py-3 border-none bg-transparent text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 text-sm"
                                     />
                                 </div>
 
                                 {/* Job Type */}
-                                <div className="relative w-full md:w-1/4 group py-2 md:py-0 md:px-4">
-                                    <div className="absolute inset-y-0 left-0 md:left-4 pl-3 flex items-center pointer-events-none">
-                                        <Briefcase className="h-5 w-5 text-gray-400" />
-                                    </div>
+                                <div className={`relative flex items-center h-full w-full py-2 md:py-0 md:px-4 transition-colors duration-200 rounded-r-xl ${focusedField === 'jobType' ? 'bg-indigo-50/20' : ''}`}>
+                                    <Briefcase className={`h-5 w-5 shrink-0 transition-colors duration-200 ${focusedField === 'jobType' ? 'text-indigo-650' : 'text-gray-400'}`} />
                                     <select
                                         name="jobType"
                                         value={filters.jobType}
                                         onChange={handleFilterChange}
-                                        className="block w-full pl-10 pr-8 py-3 border-none bg-transparent text-gray-900 focus:outline-none focus:ring-0 text-sm appearance-none cursor-pointer"
+                                        onFocus={() => setFocusedField('jobType')}
+                                        onBlur={() => setFocusedField(null)}
+                                        className="block w-full pl-3 pr-8 py-3 border-none bg-transparent text-gray-900 focus:outline-none focus:ring-0 text-sm appearance-none cursor-pointer"
                                     >
-                                        <option value="" className="text-gray-400">Job Type</option>
+                                        <option value="">Job Type</option>
                                         <option value="FULL_TIME">Full Time</option>
                                         <option value="PART_TIME">Part Time</option>
                                         <option value="CONTRACT">Contract</option>
@@ -128,10 +132,10 @@ const Landing = () => {
                                 </div>
 
                                 {/* Button */}
-                                <div className="w-full md:w-auto md:pl-4 py-1 md:py-0 flex shrink-0">
+                                <div className="w-full md:w-auto md:pl-4 py-1 md:py-0 flex shrink-0 justify-end">
                                     <button
                                         type="submit"
-                                        className="w-full md:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-extrabold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition-all cursor-pointer shadow-md shadow-indigo-600/10"
+                                        className="w-full md:w-auto shrink-0 inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-extrabold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition-all cursor-pointer shadow-md shadow-indigo-600/10"
                                     >
                                         Search Jobs
                                     </button>
@@ -165,8 +169,11 @@ const Landing = () => {
             </div>
 
             {/* Trust Section */}
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-                <div className="bg-white border border-gray-150 rounded-2xl p-5 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+            <div className="w-full max-w-7xl mx-auto px-6 mt-8">
+                <div 
+                    className="bg-white rounded-2xl p-5 grid grid-cols-1 md:grid-cols-3 gap-6 text-center"
+                    style={{ border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(15, 23, 42, 0.03)' }}
+                >
                     <div className="flex flex-col sm:flex-row items-center gap-4 text-left px-4">
                         <div className="bg-green-50 text-green-600 p-2.5 rounded-xl">
                             <ShieldCheck className="h-6 w-6" />
