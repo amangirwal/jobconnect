@@ -12,6 +12,7 @@ const Signup = () => {
     });
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
     const { signup } = useAuth();
     const navigate = useNavigate();
 
@@ -39,13 +40,17 @@ const Signup = () => {
             return;
         }
 
+        setLoading(true);
+
         try {
             // Exclude confirmPassword from data sent to backend
             const { confirmPassword, ...signupData } = formData;
-            await signup(signupData);
-            navigate('/');
+            const res = await signup(signupData);
+            navigate('/verify-otp', { state: { email: formData.email, message: res.message || 'OTP sent successfully. Please check your Gmail.' } });
         } catch (err) {
             setError(err.response?.data?.message || 'Signup failed');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -120,9 +125,10 @@ const Signup = () => {
                 </div>
                 <button
                     type="submit"
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
+                    disabled={loading}
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    Sign Up
+                    {loading ? 'Creating Account...' : 'Sign Up'}
                 </button>
                 <p className="text-sm text-center">
                     Already have an account? <a href="/login" className="text-indigo-600 hover:text-indigo-500">Login</a>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { SERVER_URL } from '../api/axios';
 import { useParams, Link } from 'react-router-dom';
 import { getJobById, applyForJob } from '../api/services';
 import { useAuth } from '../context/AuthContext';
@@ -67,7 +68,7 @@ const JobDetails = () => {
                             <p className="mt-2 text-lg text-indigo-600 font-medium">{job.company}</p>
                         </div>
                         {job.recruiter?.profilePicture && (
-                            <img src={`http://localhost:3000/${job.recruiter.profilePicture}`} alt="Company" className="h-16 w-16 rounded-full object-cover shadow-sm bg-gray-50" />
+                            <img src={`${SERVER_URL}/${job.recruiter.profilePicture}`} alt="Company" className="h-16 w-16 rounded-full object-cover shadow-sm bg-gray-50" />
                         )}
                     </div>
                 </div>

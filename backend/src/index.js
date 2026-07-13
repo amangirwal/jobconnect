@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const multer = require('multer');
+const path = require('path');
 
 dotenv.config();
 
@@ -10,7 +11,11 @@ const PORT = process.env.PORT || 3000;
 
 const authRoutes = require('./routes/authRoutes');
 
-app.use(cors());
+const allowedOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : null;
+app.use(cors({
+    origin: allowedOrigins || '*',
+    credentials: true
+}));
 app.use(express.json());
 
 // Basic Route
@@ -19,7 +24,7 @@ app.get('/', (req, res) => {
 });
 
 // Routes
-app.use('/uploads', express.static('uploads')); // Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, '../uploads'))); // Serve uploaded files
 app.use('/api/auth', authRoutes);
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/jobs', require('./routes/jobRoutes'));

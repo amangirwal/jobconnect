@@ -20,6 +20,18 @@ exports.sendOtpEmail = async (email, otp) => {
     await this.sendEmail(mailOptions);
 };
 
+exports.sendResetOtpEmail = async (email, otp) => {
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Password Reset Code for Job Connect',
+        text: `Your password reset code is: ${otp}. It will expire in 10 minutes.`,
+        html: `<p>Your password reset code is: <strong>${otp}</strong></p><p>It will expire in 10 minutes.</p>`,
+    };
+
+    await this.sendEmail(mailOptions);
+};
+
 exports.sendEmail = async (mailOptions) => {
     try {
         if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {

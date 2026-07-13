@@ -11,6 +11,9 @@ import JobDetails from './pages/JobDetails';
 import Profile from './pages/Profile';
 import ApplicationsList from './pages/ApplicationsList';
 import MyChats from './pages/MyChats';
+import VerifyOtp from './pages/VerifyOtp';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
   return (
@@ -26,6 +29,10 @@ function App() {
         <Route path="my-applications" element={<MyApplications />} />
         <Route path="my-chats" element={<MyChats />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="profile/:userId" element={<Profile />} />
+        <Route path="verify-otp" element={<VerifyOtp />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password" element={<ResetPassword />} />
       </Route>
     </Routes>
   );

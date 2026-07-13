@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { SERVER_URL } from '../api/axios';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getAllJobs } from '../api/services';
@@ -167,7 +168,7 @@ const Landing = () => {
                                                 <p className="text-sm text-gray-500 font-medium mt-1 truncate">{job.company}</p>
                                             </div>
                                             {job.recruiter?.profilePicture ? (
-                                                <img src={`http://localhost:3000/${job.recruiter.profilePicture}`} alt="Company" className="h-12 w-12 rounded-lg object-cover shadow-sm border border-gray-100 shrink-0" />
+                                                <img src={`${SERVER_URL}/${job.recruiter.profilePicture}`} alt="Company" className="h-12 w-12 rounded-lg object-cover shadow-sm border border-gray-100 shrink-0" />
                                             ) : (
                                                 <div className="h-12 w-12 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-xl shrink-0">
                                                     {job.company.charAt(0).toUpperCase()}

@@ -1,3 +1,4 @@
+const uploadToCloudinary = require('../utils/uploadToCloudinary');
 const { sendEmail } = require('../utils/emailService');
 const prisma = require('../utils/db');
 
@@ -30,9 +31,18 @@ exports.applyForJob = async (req, res) => {
         }
 
         // Handle resume upload
-        let resume = null;
+       let resume = null;
+
         if (req.file) {
-            resume = req.file.path;
+            const resumeResult = await uploadToCloudinary(
+                req.file.buffer,
+                {
+                    folder: 'jobconnect/resumes',
+                    resource_type: 'auto',
+                    public_id: `application-resume-${req.user.userId}-${Date.now()}`,
+                }
+            );
+            resume = resumeResult.secure_url;
         }
 
         const application = await prisma.application.create({
@@ -52,7 +62,7 @@ exports.applyForJob = async (req, res) => {
                     to: job.recruiter.email,
                     subject: `New Application for ${job.title}`,
                     text: `You have received a new application from ${candidate.name} for the position of ${job.title}. Check your dashboard for details.`,
-                    html: `<p>You have received a new application from <strong>${candidate.name}</strong> for the position of <strong>${job.title}</strong>.</p><p><a href="http://localhost:5173/my-jobs">View Application</a></p>`
+                    html: `<p>You have received a new application from <strong>${candidate.name}</strong> for the position of <strong>${job.title}</strong>.</p><p><a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/my-jobs">View Application</a></p>`
                 });
             }
         } catch (emailError) {
@@ -101,6 +111,12 @@ exports.getJobApplications = async (req, res) => {
             return res.status(403).json({ message: 'Access denied: You do not own this job' });
         }
 
+        // Mark all applications for this job as viewed
+        await prisma.application.updateMany({
+            where: { jobId, isViewed: false },
+            data: { isViewed: true }
+        });
+
         const applications = await prisma.application.findMany({
             where: { jobId },
             include: {
@@ -135,7 +151,10 @@ exports.updateApplicationStatus = async (req, res) => {
 
         const application = await prisma.application.findUnique({
             where: { id },
-            include: { job: true }
+            include: {
+                job: true,
+                candidate: true
+            }
         });
 
         if (!application) {
@@ -150,6 +169,41 @@ exports.updateApplicationStatus = async (req, res) => {
             where: { id },
             data: { status }
         });
+
+        // Send Status Update Email to Candidate
+        try {
+            if (application.candidate && application.candidate.email) {
+                let subject = '';
+                let text = '';
+                let html = '';
+
+                if (status === 'SELECTED') {
+                    subject = `Congratulations! You have been Selected for ${application.job.title}`;
+                    text = `Dear ${application.candidate.name},\n\nWe are pleased to inform you that your application for the ${application.job.title} role at ${application.job.company} has been SELECTED.\n\nYou can now chat with the recruiter directly on our platform.\n\nBest regards,\nRecruitment Team`;
+                    html = `<p>Dear <strong>${application.candidate.name}</strong>,</p><p>We are pleased to inform you that your application for the <strong>${application.job.title}</strong> position at <strong>${application.job.company}</strong> has been <strong>SELECTED</strong>!</p><p>You can now message the recruiter directly on <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/my-applications">JobConnect</a>.</p><p>Best regards,<br/>Recruitment Team</p>`;
+                } else if (status === 'REJECTED') {
+                    subject = `Application status update: ${application.job.title}`;
+                    text = `Dear ${application.candidate.name},\n\nThank you for applying to the ${application.job.title} position at ${application.job.company}. We appreciate your interest, but we have decided to proceed with other candidates. We wish you all the best in your job search.\n\nBest regards,\nRecruitment Team`;
+                    html = `<p>Dear <strong>${application.candidate.name}</strong>,</p><p>Thank you for applying to the <strong>${application.job.title}</strong> position at <strong>${application.job.company}</strong>.</p><p>We appreciate the time you took to apply. However, we have decided to proceed with other candidates. We wish you all the best in your future endeavors.</p><p>Best regards,<br/>Recruitment Team</p>`;
+                } else if (status === 'REVIEWING') {
+                    subject = `Your application is now under review: ${application.job.title}`;
+                    text = `Dear ${application.candidate.name},\n\nYour application for the ${application.job.title} position at ${application.job.company} is now being reviewed by the hiring manager. We will update you on any status changes.\n\nBest regards,\nRecruitment Team`;
+                    html = `<p>Dear <strong>${application.candidate.name}</strong>,</p><p>Your application for the <strong>${application.job.title}</strong> position at <strong>${application.job.company}</strong> is now under <strong>REVIEW</strong>.</p><p>We will contact you if there are any updates.</p><p>Best regards,<br/>Recruitment Team</p>`;
+                }
+
+                if (subject) {
+                    await sendEmail({
+                        from: process.env.EMAIL_USER,
+                        to: application.candidate.email,
+                        subject,
+                        text,
+                        html
+                    });
+                }
+            }
+        } catch (emailError) {
+            console.error("Failed to send status update email:", emailError);
+        }
 
         res.json(updatedApplication);
     } catch (error) {
@@ -180,8 +234,16 @@ exports.sendMessage = async (req, res) => {
 
         if (isCandidate) {
             // Candidate trying to message Recruiter
-            if (application.status !== 'SELECTED') {
-                return res.status(403).json({ message: 'You can only chat with the recruiter if you are SELECTED.' });
+            // Allow if status is SELECTED or if recruiter has initiated/sent a message first
+            const hasRecruiterMessaged = await prisma.message.findFirst({
+                where: {
+                    applicationId,
+                    senderId: application.job.recruiterId
+                }
+            });
+
+            if (application.status !== 'SELECTED' && !hasRecruiterMessaged) {
+                return res.status(403).json({ message: 'You can only chat with the recruiter if you are SELECTED or they have initiated the chat.' });
             }
             receiverId = application.job.recruiterId;
         } else if (isRecruiter) {
@@ -346,5 +408,21 @@ exports.getMyChats = async (req, res) => {
     } catch (error) {
         console.error("Error fetching my chats:", error);
         res.status(500).json({ message: 'Failed to fetch chats' });
+    }
+};
+
+exports.getRecruiterTotalApplicationsCount = async (req, res) => {
+    try {
+        const recruiterId = req.user.userId;
+        const count = await prisma.application.count({
+            where: {
+                isViewed: false,
+                job: { recruiterId: recruiterId }
+            }
+        });
+        res.json({ count });
+    } catch (error) {
+        console.error("Error fetching recruiter unread applications count:", error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 };

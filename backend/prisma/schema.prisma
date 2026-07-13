@@ -68,6 +68,7 @@ model Application {
   candidate   User     @relation(fields: [candidateId], references: [id])
   resume      String?  // Resume snapshot
   status      String   @default("APPLIED")
+  isViewed    Boolean  @default(false)
   appliedAt   DateTime @default(now())
 
   @@unique([jobId, candidateId])

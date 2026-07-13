@@ -24,11 +24,40 @@ const MyApplications = () => {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div className="p-8 text-center">Loading...</div>;
+
+    const totalApplied = applications.length;
+    const selectedCount = applications.filter(app => app.status === 'SELECTED').length;
+    const reviewingCount = applications.filter(app => app.status === 'REVIEWING').length;
+    const appliedPendingCount = applications.filter(app => app.status === 'APPLIED').length;
 
     return (
-        <div>
-            <h1 className="text-2xl font-bold mb-6">My Applications</h1>
+        <div className="max-w-6xl mx-auto p-4 sm:p-8">
+            <h1 className="text-2xl font-bold mb-6 text-gray-900">My Applications</h1>
+
+            {/* Candidate Statistics Panel */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 border border-indigo-100 rounded-xl p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+                    <p className="text-xs font-semibold text-indigo-700 uppercase tracking-wider">Total Applied</p>
+                    <p className="text-3xl font-extrabold text-indigo-900 mt-2">{totalApplied}</p>
+                </div>
+                <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-100 rounded-xl p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+                    <p className="text-xs font-semibold text-green-700 uppercase tracking-wider">Shortlisted</p>
+                    <p className="text-3xl font-extrabold text-green-900 mt-2 flex items-center gap-2">
+                        {selectedCount}
+                        {selectedCount > 0 && <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span>}
+                    </p>
+                </div>
+                <div className="bg-gradient-to-br from-yellow-50 to-yellow-100/50 border border-yellow-100 rounded-xl p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+                    <p className="text-xs font-semibold text-yellow-700 uppercase tracking-wider">Under Review</p>
+                    <p className="text-3xl font-extrabold text-yellow-900 mt-2">{reviewingCount}</p>
+                </div>
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 border border-gray-100 rounded-xl p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+                    <p className="text-xs font-semibold text-gray-700 uppercase tracking-wider">Applied</p>
+                    <p className="text-3xl font-extrabold text-gray-900 mt-2">{appliedPendingCount}</p>
+                </div>
+            </div>
+
             <div className="bg-white shadow overflow-hidden sm:rounded-md">
                 <ul className="divide-y divide-gray-200">
                     {applications.map((app) => (
@@ -45,8 +74,12 @@ const MyApplications = () => {
                                         </p>
                                     </div>
                                     <div className="mt-2 flex items-center gap-4 text-sm text-gray-500 sm:mt-0">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${app.status === 'APPLIED' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                                            }`}>
+                                        <span className={`px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                            app.status === 'SELECTED' ? 'bg-green-100 text-green-800' :
+                                            app.status === 'REVIEWING' ? 'bg-yellow-100 text-yellow-800' :
+                                            app.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                                            'bg-blue-100 text-blue-800'
+                                        }`}>
                                             {app.status}
                                         </span>
                                         {app.status === 'SELECTED' && (

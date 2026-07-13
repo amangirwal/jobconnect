@@ -1,7 +1,7 @@
 import api from './axios';
 
 // User/Profile APIs
-export const getProfile = () => api.get('/users/profile');
+export const getProfile = (userId) => api.get(userId ? `/users/profile/${userId}` : '/users/profile');
 export const updateProfile = (formData) => api.put('/users/profile', formData, {
     headers: { 'Content-Type': 'multipart/form-data' } // For file uploads
 });
@@ -26,3 +26,9 @@ export const getMessages = (applicationId) => api.get(`/applications/${applicati
 export const markAsRead = (applicationId) => api.put('/applications/message/read', { applicationId });
 export const getUnreadCount = () => api.get('/applications/chats/unread-count');
 export const getMyChats = () => api.get('/applications/chats');
+
+// Auth Verification & Reset APIs
+export const verifyOtp = (data) => api.post('/auth/verify-otp', data);
+export const resendOtp = (data) => api.post('/auth/resend-otp', data);
+export const forgotPassword = (data) => api.post('/auth/forgot-password', data);
+export const resetPassword = (data) => api.post('/auth/reset-password', data);

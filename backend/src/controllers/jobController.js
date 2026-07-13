@@ -49,9 +49,28 @@ exports.getMyJobs = async (req, res) => {
     try {
         const jobs = await prisma.job.findMany({
             where: { recruiterId: req.user.userId },
+            include: {
+                applications: {
+                    select: { id: true, status: true, isViewed: true }
+                }
+            },
             orderBy: { createdAt: 'desc' },
         });
-        res.json(jobs);
+
+        const jobsWithCount = jobs.map(job => {
+            const unviewedCount = job.applications.filter(app => !app.isViewed).length;
+            const selectedCount = job.applications.filter(app => app.status === 'SELECTED').length;
+            const totalCount = job.applications.length;
+            const { applications, ...jobData } = job;
+            return {
+                ...jobData,
+                unviewedApplicationsCount: unviewedCount,
+                selectedApplicationsCount: selectedCount,
+                totalApplicationsCount: totalCount
+            };
+        });
+
+        res.json(jobsWithCount);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });

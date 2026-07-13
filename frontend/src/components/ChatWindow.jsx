@@ -65,7 +65,7 @@ const ChatWindow = ({ applicationId, currentUserId, otherUserName, onClose }) =>
     };
 
     return (
-        <div className="fixed bottom-4 right-4 w-80 h-96 bg-white rounded-lg shadow-2xl flex flex-col border border-gray-200 z-50 transform transition-all duration-300 ease-in-out animate-slide-up hover:shadow-indigo-500/20">
+        <div className="fixed bottom-4 right-4 w-[calc(100%-2rem)] sm:w-80 h-96 bg-white rounded-lg shadow-2xl flex flex-col border border-gray-200 z-50 transform transition-all duration-300 ease-in-out animate-slide-up hover:shadow-indigo-500/20">
             {/* Header */}
             <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-3 rounded-t-lg flex justify-between items-center text-white shadow-md">
                 <div className="font-semibold flex items-center gap-2">

@@ -6,6 +6,7 @@ const upload = require('../middleware/uploadMiddleware');
 const router = express.Router();
 
 router.get('/profile', protect, getProfile);
+router.get('/profile/:userId', protect, getProfile);
 router.put('/profile', protect, upload.fields([
     { name: 'resume', maxCount: 1 },
     { name: 'profilePicture', maxCount: 1 }

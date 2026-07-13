@@ -1,3 +1,4 @@
+const uploadToCloudinary = require('../utils/uploadToCloudinary');
 const prisma = require('../utils/db');
 const { z } = require('zod');
 
@@ -14,8 +15,9 @@ const profileSchema = z.object({
 
 exports.getProfile = async (req, res) => {
     try {
+        const userId = req.params.userId || req.user.userId;
         const user = await prisma.user.findUnique({
-            where: { id: req.user.userId },
+            where: { id: userId },
             select: {
                 id: true,
                 email: true,
@@ -57,14 +59,36 @@ exports.updateProfile = async (req, res) => {
         if (data.companyWebsite) updateData.companyWebsite = data.companyWebsite;
         if (data.companyDescription) updateData.companyDescription = data.companyDescription;
 
+        if (req.body.deleteResume === 'true') {
+            updateData.resume = null;
+        }
+
         // Handle file uploads
         if (req.files) {
-            if (req.files.resume) {
-                updateData.resume = req.files.resume[0].path;
+            if (req.files?.resume?.[0]) {
+                const resumeResult = await uploadToCloudinary(
+                    req.files.resume[0].buffer,
+                    {
+                        folder: 'jobconnect/resumes',
+                        resource_type: 'auto',
+                        public_id: `resume-${req.user.userId}-${Date.now()}`,
+                    }
+                );
+                updateData.resume = resumeResult.secure_url;
             }
-            if (req.files.profilePicture) {
-                updateData.profilePicture = req.files.profilePicture[0].path;
-            }
+
+if (req.files?.profilePicture?.[0]) {
+    const profilePictureResult = await uploadToCloudinary(
+        req.files.profilePicture[0].buffer,
+        {
+            folder: 'jobconnect/profile-pictures',
+            resource_type: 'image',
+            public_id: `profile-${req.user.userId}-${Date.now()}`,
+        }
+    );
+
+    updateData.profilePicture = profilePictureResult.secure_url;
+}
         }
 
         const user = await prisma.user.update({

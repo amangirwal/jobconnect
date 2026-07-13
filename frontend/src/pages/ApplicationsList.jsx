@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { SERVER_URL } from '../api/axios';
 import { useParams, Link } from 'react-router-dom';
 import { getJobApplications, updateApplicationStatus } from '../api/services';
 import { useAuth } from '../context/AuthContext';
 import ChatWindow from '../components/ChatWindow';
+import { X, Download } from 'lucide-react';
 
 const ApplicationsList = () => {
     const { user } = useAuth();
@@ -11,6 +13,8 @@ const ApplicationsList = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [activeChat, setActiveChat] = useState(null); // { appId, otherUserName }
+    const [previewResumeUrl, setPreviewResumeUrl] = useState(null);
+    const [previewResumeName, setPreviewResumeName] = useState('');
 
     useEffect(() => {
         fetchApplications();
@@ -61,8 +65,10 @@ const ApplicationsList = () => {
                                 <div className="flex items-center justify-between flex-wrap gap-4">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-3">
-                                            <h3 className="text-lg font-medium text-gray-900">
-                                                {app.candidate.name}
+                                            <h3 className="text-lg font-bold text-gray-900">
+                                                <Link to={`/profile/${app.candidate.id}`} className="hover:text-indigo-600 hover:underline">
+                                                    {app.candidate.name}
+                                                </Link>
                                             </h3>
                                             <button
                                                 onClick={() => setActiveChat({ appId: app.id, otherUserName: app.candidate.name })}
@@ -99,14 +105,17 @@ const ApplicationsList = () => {
 
                                         <div className="flex gap-3 mt-2">
                                             {app.resume || app.candidate.resume ? (
-                                                <a
-                                                    href={`http://localhost:3000/${app.resume || app.candidate.resume}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200"
+                                                <button
+                                                    onClick={() => {
+                                                        const resumePath = app.resume || app.candidate.resume;
+                                                        const resumeUrl = typeof resumePath === 'string' && (resumePath.startsWith('http://') || resumePath.startsWith('https://')) ? resumePath : `${SERVER_URL}/${resumePath}`;
+                                                        setPreviewResumeUrl(resumeUrl);
+                                                        setPreviewResumeName(`${app.candidate.name}_Resume.pdf`);
+                                                    }}
+                                                    className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer"
                                                 >
                                                     View Resume
-                                                </a>
+                                                </button>
                                             ) : (
                                                 <span className="inline-block text-xs text-gray-400 italic">No resume</span>
                                             )}
@@ -167,6 +176,138 @@ const ApplicationsList = () => {
                     onClose={() => setActiveChat(null)}
                 />
             )}
+
+            {/* Modal for PDF Preview */}
+            {previewResumeUrl && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+                    <div className="relative bg-white rounded-lg w-full max-w-4xl h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+                        {/* Header with Title, Download and Close button */}
+                        <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
+                            <h3 className="text-base font-bold text-gray-900 truncate pr-4">
+                                {previewResumeName}
+                            </h3>
+                            <div className="flex items-center gap-3">
+                                <a
+                                    href={previewResumeUrl}
+                                    download
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="border border-gray-300 rounded-full w-9 h-9 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-gray-800 cursor-pointer transition-colors p-0"
+                                    title="Download Resume"
+                                >
+                                    <Download className="w-4 h-4" />
+                                </a>
+                                <button
+                                    onClick={() => setPreviewResumeUrl(null)}
+                                    className="border border-blue-600 rounded-full w-9 h-9 flex items-center justify-center text-blue-600 hover:bg-blue-50 cursor-pointer transition-colors p-0"
+                                    title="Close"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
+                        {/* Custom PDF Viewer */}
+                        <div className="flex-1 overflow-hidden">
+                            <PdfViewer url={previewResumeUrl} />
+                        </div>
+                        {/* Footer bar */}
+                        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center gap-2">
+                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            <p className="text-xs text-gray-500 font-medium">Previewing candidate's resume.</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+const PdfViewer = ({ url }) => {
+    const containerRef = React.useRef(null);
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        if (!url) return;
+        setLoading(true);
+        let active = true;
+
+        const renderPdf = async () => {
+            try {
+                if (containerRef.current) {
+                    containerRef.current.innerHTML = '';
+                }
+
+                const pdfjsLib = window.pdfjsLib;
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+                const pdf = await pdfjsLib.getDocument(url).promise;
+                if (!active) return;
+                setLoading(false);
+
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    if (!active) return;
+                    const page = await pdf.getPage(pageNum);
+                    if (!active) return;
+
+                    const scale = 2.2;
+                    const viewport = page.getViewport({ scale });
+                    const displayViewport = page.getViewport({ scale: 1.3 });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.className = 'shadow-md mb-6 mx-auto bg-white rounded border border-gray-200 block';
+                    canvas.style.width = '100%';
+                    canvas.style.maxWidth = `${displayViewport.width}px`;
+                    canvas.style.height = 'auto';
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+
+                    const context = canvas.getContext('2d');
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport,
+                    };
+
+                    containerRef.current.appendChild(canvas);
+                    await page.render(renderContext).promise;
+                }
+            } catch (err) {
+                console.error('Error rendering PDF:', err);
+                if (active && containerRef.current) {
+                    containerRef.current.innerHTML = '<p class="text-red-500 text-center p-4">Failed to render PDF document preview.</p>';
+                }
+                if (active) setLoading(false);
+            }
+        };
+
+        if (window.pdfjsLib) {
+            renderPdf();
+        } else {
+            const interval = setInterval(() => {
+                if (window.pdfjsLib && active) {
+                    clearInterval(interval);
+                    renderPdf();
+                }
+            }, 100);
+            return () => {
+                active = false;
+                clearInterval(interval);
+            };
+        }
+
+        return () => {
+            active = false;
+        };
+    }, [url]);
+
+    return (
+        <div className="w-full h-full overflow-y-auto bg-gray-100 p-6 flex flex-col items-center">
+            {loading && (
+                <div className="flex flex-col items-center justify-center py-20 gap-2">
+                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-gray-500 text-sm font-medium">Loading resume preview...</p>
+                </div>
+            )}
+            <div ref={containerRef} className="w-full flex flex-col items-center"></div>
         </div>
     );
 };
