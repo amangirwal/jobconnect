@@ -20,16 +20,28 @@ const Landing = () => {
         fetchJobs();
     }, []);
 
-    const fetchJobs = async () => {
+    const fetchJobs = async (customFilters = null) => {
         setLoading(true);
         try {
-            const res = await getAllJobs(filters);
+            const res = await getAllJobs(customFilters || filters);
             setJobs(res.data);
         } catch (error) {
             console.error('Failed to fetch jobs', error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleQuickSearch = (newFilter) => {
+        const updated = {
+            keyword: '',
+            location: '',
+            jobType: '',
+            experienceLevel: '',
+            ...newFilter
+        };
+        setFilters(updated);
+        fetchJobs(updated);
     };
 
     const handleFilterChange = (e) => {
@@ -115,10 +127,26 @@ const Landing = () => {
                         </form>
                     </div>
 
-                    {/* Stats or Tags */}
-                    <div className="mt-8 flex justify-center gap-6 text-indigo-200 text-sm animate-fade-in" style={{ animationDelay: '0.3s' }}>
-                        <span className="flex items-center gap-1"><TrendingUp className="h-4 w-4" /> Trending Jobs</span>
-                        <span className="flex items-center gap-1"><Clock className="h-4 w-4" /> Recently Added</span>
+                    {/* Quick Search Tags */}
+                    <div className="mt-8 flex flex-wrap justify-center gap-2 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                        <span className="text-indigo-200 text-sm font-semibold flex items-center mr-2">Popular tags:</span>
+                        {[
+                            { label: 'Remote 🏠', filter: { location: 'Remote' } },
+                            { label: 'Frontend 💻', filter: { keyword: 'Frontend' } },
+                            { label: 'Full Time ⏱️', filter: { jobType: 'FULL_TIME' } },
+                            { label: 'Internship 🎓', filter: { jobType: 'INTERNSHIP' } },
+                            { label: 'Mumbai 📍', filter: { location: 'Mumbai' } },
+                            { label: 'React ⚡', filter: { keyword: 'React' } }
+                        ].map((tag, idx) => (
+                            <button
+                                key={idx}
+                                type="button"
+                                onClick={() => handleQuickSearch(tag.filter)}
+                                className="bg-white/10 hover:bg-white/20 text-white border border-white/10 px-3.5 py-1 rounded-full text-xs font-semibold cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-sm"
+                            >
+                                {tag.label}
+                            </button>
+                        ))}
                     </div>
                 </div>
             </div>

@@ -87,51 +87,47 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="bg-white shadow-sm border-b border-gray-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between h-16">
+        <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-6xl z-50 bg-white/70 backdrop-blur-md border border-white/20 shadow-lg shadow-indigo-950/5 rounded-full px-6 transition-all duration-300">
+            <div className="mx-auto">
+                <div className="flex justify-between h-14 items-center">
                     <div className="flex items-center">
-                        <Link to="/" className="flex-shrink-0 flex items-center">
-                            <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">JobConnect</span>
+                        <Link to="/" className="flex-shrink-0 flex items-center transform hover:scale-[1.02] transition-transform">
+                            <span className="text-xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-transparent bg-clip-text">JobConnect</span>
                         </Link>
                     </div>
-                    <div className="hidden md:flex items-center space-x-6">
+                    <div className="hidden md:flex items-center space-x-2">
                         {user ? (
                             <>
-                                <Link to="/profile" className="text-gray-700 hover:text-indigo-600 font-medium px-3 py-2 rounded-md transition-colors">
+                                <Link to="/profile" className="text-gray-600 hover:text-indigo-600 font-semibold px-3 py-1.5 rounded-full hover:bg-indigo-50/50 text-sm transition-all">
                                     {user.name}
                                 </Link>
                                 {user.role === 'RECRUITER' ? (
                                     <>
-                                        <Link to="/create-job" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">Post a Job</Link>
+                                        <Link to="/create-job" className="text-gray-500 hover:text-indigo-600 px-3 py-1.5 rounded-full hover:bg-indigo-50/50 text-sm font-semibold transition-all">Post a Job</Link>
                                         <Link
                                             to="/my-jobs"
                                             onClick={() => setUnreadAppsCount(0)}
-                                            className="relative text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                                            className="relative text-gray-500 hover:text-indigo-600 px-3 py-1.5 rounded-full hover:bg-indigo-50/50 text-sm font-semibold transition-all"
                                         >
                                             My Jobs
                                             {unreadAppsCount > 0 && (
-                                                <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                                <span className="absolute top-1 right-0 flex h-2 w-2">
                                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                                    <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-white text-[10px] items-center justify-center font-bold">
-                                                        {unreadAppsCount}
-                                                    </span>
+                                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                                                 </span>
                                             )}
                                         </Link>
                                     </>
                                 ) : (
-                                    <Link to="/my-applications" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">My Applications</Link>
+                                    <Link to="/my-applications" className="text-gray-500 hover:text-indigo-600 px-3 py-1.5 rounded-full hover:bg-indigo-50/50 text-sm font-semibold transition-all">My Applications</Link>
                                 )}
 
-                                <Link to="/my-chats" className="relative text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                                <Link to="/my-chats" className="relative text-gray-500 hover:text-indigo-600 px-3 py-1.5 rounded-full hover:bg-indigo-50/50 text-sm font-semibold transition-all">
                                     Messages
                                     {unreadCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                        <span className="absolute top-1 right-0 flex h-2 w-2">
                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-white text-[10px] items-center justify-center font-bold">
-                                                {unreadCount}
-                                            </span>
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                                         </span>
                                     )}
                                 </Link>
@@ -140,17 +136,17 @@ const Navbar = () => {
                                     <div>
                                         <button
                                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                            className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer p-1 hover:bg-gray-100"
+                                            className="rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer p-1 hover:bg-indigo-50/50 transition-colors"
                                         >
                                             <span className="sr-only">Open user menu</span>
-                                            <MoreVertical className="h-6 w-6 text-gray-500" />
+                                            <MoreVertical className="h-5 w-5 text-gray-500" />
                                         </button>
                                     </div>
                                     {isMenuOpen && (
-                                        <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                                        <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-2xl shadow-xl py-1 bg-white border border-gray-100 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
                                             <button
                                                 onClick={handleLogout}
-                                                className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                                                className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 flex items-center rounded-xl transition-all"
                                             >
                                                 <LogOut className="h-4 w-4 mr-2" />
                                                 Logout
@@ -161,10 +157,10 @@ const Navbar = () => {
                             </>
                         ) : (
                             <>
-                                <Link to="/login" className="text-gray-600 hover:text-gray-900 font-medium mr-4">
+                                <Link to="/login" className="text-gray-600 hover:text-indigo-600 font-semibold px-4 py-1.5 rounded-full text-sm transition-all">
                                     Login
                                 </Link>
-                                <Link to="/signup" className="text-indigo-600 hover:text-indigo-900 font-medium">
+                                <Link to="/signup" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-1.5 rounded-full text-sm transition-all shadow-md shadow-indigo-500/10">
                                     Signup
                                 </Link>
                             </>
@@ -174,10 +170,10 @@ const Navbar = () => {
                     <div className="flex items-center md:hidden">
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="text-gray-500 hover:text-gray-700 p-2 rounded-md hover:bg-gray-100 cursor-pointer focus:outline-none"
+                            className="text-gray-500 hover:text-indigo-600 p-2 rounded-full hover:bg-indigo-50/50 cursor-pointer focus:outline-none transition-colors"
                             title="Menu"
                         >
-                            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                         </button>
                     </div>
                 </div>
@@ -185,7 +181,7 @@ const Navbar = () => {
 
             {/* Mobile Menu Dropdown */}
             {isMobileMenuOpen && (
-                <div className="md:hidden border-t border-gray-100 bg-white px-4 pt-2 pb-4 space-y-1 shadow-inner animate-fade-in">
+                <div className="absolute top-16 left-0 right-0 md:hidden bg-white/95 backdrop-blur-md border border-gray-100 rounded-2xl p-4 space-y-1 shadow-xl shadow-indigo-950/10 animate-fade-in z-50">
                     {user ? (
                         <>
                             <div className="px-3 py-2 text-sm font-semibold text-gray-900 border-b border-gray-100 mb-2">
