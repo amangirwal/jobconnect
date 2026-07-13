@@ -25,13 +25,36 @@ const loginSchema = z.object({
 exports.signup = async (req, res) => {
     try {
         const { email, password, name, role } = signupSchema.parse(req.body);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const existingUser = await prisma.user.findUnique({ where: { email } });
         if (existingUser) {
+            if (!existingUser.isVerified) {
+                // If the user registered but didn't verify, regenerate the OTP and send them to the verify screen
+                const otp = Math.floor(100000 + Math.random() * 900000).toString();
+                const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+                await prisma.user.update({
+                    where: { id: existingUser.id },
+                    data: {
+                        otp,
+                        otpExpiresAt,
+                        // Update details if they want to modify their name/role/password
+                        password: hashedPassword,
+                        name,
+                        role
+                    }
+                });
+
+                sendOtpEmail(email, otp).catch(err => console.error("Background OTP resend failed", err));
+
+                return res.status(200).json({
+                    message: 'An unverified account with this email already exists. A new verification OTP has been sent to your Gmail.',
+                    email: existingUser.email
+                });
+            }
             return res.status(400).json({ message: 'User already exists' });
         }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
 
         // Generate 6-digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
