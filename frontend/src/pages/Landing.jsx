@@ -57,7 +57,7 @@ const Landing = () => {
     return (
         <div className="min-h-screen font-sans">
             {/* Hero & Search Section */}
-            <div className="w-full max-w-7xl mx-auto px-6 mt-6">
+            <div className="w-full mt-1.5">
                 <div 
                     className="text-white rounded-3xl shadow-xl relative overflow-hidden"
                     style={{ background: 'linear-gradient(135deg, #4338CA 0%, #6D28D9 50%, #7E22CE 100%)' }}
@@ -66,21 +66,21 @@ const Landing = () => {
                     <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-purple-500/20 rounded-full mix-blend-screen filter blur-3xl animate-blob"></div>
                     <div className="absolute -bottom-32 -left-20 w-96 h-96 bg-indigo-500/20 rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-2000"></div>
 
-                    <div className="max-w-4xl mx-auto px-6 sm:px-12 pt-[60px] pb-[64px] relative z-10 text-center flex flex-col items-center">
+                    <div className="max-w-4xl mx-auto px-6 sm:px-12 pt-[50px] pb-[54px] relative z-10 text-center flex flex-col items-center">
                         {/* Pill badge above heading */}
-                        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-indigo-100 text-xs font-semibold mb-4 tracking-wide shadow-inner">
+                        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-indigo-100 text-xs font-semibold mb-3.5 tracking-wide shadow-inner">
                             Discover your next opportunity
                         </div>
 
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4 animate-slide-up leading-tight">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-black tracking-tight mb-3 animate-slide-up leading-tight">
                             Find Your <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, #FACC15 0%, #FB923C 100%)' }}>Dream Job</span> Today
                         </h1>
-                        <p className="text-indigo-100/80 text-base md:text-lg max-w-2xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+                        <p className="text-indigo-100/80 text-base md:text-lg max-w-2xl mx-auto mb-7 animate-slide-up" style={{ animationDelay: '0.1s' }}>
                             Connect with top companies and startups. Your next career move is just a search away.
                         </p>
 
                         {/* Search Bar: Unified Card */}
-                        <div className="w-full max-w-[920px] mx-auto bg-white p-2 rounded-2xl shadow-2xl border border-gray-250/20 animate-fade-in relative z-20" style={{ animationDelay: '0.2s' }}>
+                        <div className="w-full max-w-[960px] mx-auto bg-white p-2 rounded-2xl shadow-2xl border border-gray-250/20 animate-fade-in relative z-20" style={{ animationDelay: '0.2s' }}>
                             <form onSubmit={handleSearch} className="flex flex-col md:grid md:grid-cols-[minmax(260px,_1.5fr)_minmax(180px,_1fr)_minmax(160px,_0.8fr)_auto] gap-2 md:gap-0 items-center justify-between w-full">
                                 {/* Keyword */}
                                 <div className={`relative flex items-center h-full w-full py-2 md:py-0 md:px-4 md:border-r border-gray-200 transition-colors duration-200 rounded-l-xl ${focusedField === 'keyword' ? 'bg-indigo-50/20' : ''}`}>
@@ -144,7 +144,7 @@ const Landing = () => {
                         </div>
 
                         {/* Popular Tags searches */}
-                        <div className="mt-8 flex flex-wrap justify-center gap-2 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                        <div className="mt-7 flex flex-wrap justify-center gap-2 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.3s' }}>
                             <span className="text-indigo-200/90 text-sm font-semibold flex items-center mr-2">Popular searches:</span>
                             {[
                                 { label: 'Remote', filter: { location: 'Remote' } },
@@ -169,10 +169,10 @@ const Landing = () => {
             </div>
 
             {/* Trust Section */}
-            <div className="w-full max-w-7xl mx-auto px-6 mt-8">
+            <div className="w-full mt-5">
                 <div 
                     className="bg-white rounded-2xl p-5 grid grid-cols-1 md:grid-cols-3 gap-6 text-center"
-                    style={{ border: '1px solid #E5E7EB', boxShadow: '0 4px 20px rgba(15, 23, 42, 0.03)' }}
+                    style={{ border: '1px solid #E5E7EB', boxShadow: '0 4px 16px rgba(15, 23, 42, 0.03)' }}
                 >
                     <div className="flex flex-col sm:flex-row items-center gap-4 text-left px-4">
                         <div className="bg-green-50 text-green-600 p-2.5 rounded-xl">
@@ -205,7 +205,7 @@ const Landing = () => {
             </div>
 
             {/* Job Listings */}
-            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="w-full py-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-8">
                     <div>
                         <h2 className="text-3xl font-black text-gray-900 tracking-tight">Latest Opportunities</h2>

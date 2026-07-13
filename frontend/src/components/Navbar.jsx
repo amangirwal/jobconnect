@@ -96,10 +96,13 @@ const Navbar = () => {
     };
 
     return (
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 mt-4 relative z-50">
-            <nav className="bg-white border border-gray-150/80 shadow-sm rounded-2xl px-6 transition-all duration-300">
+        <div className="w-full max-w-7xl mx-auto px-6 mt-4 relative z-50">
+            <nav 
+                className="bg-white rounded-2xl px-6 transition-all duration-300"
+                style={{ border: '1px solid #E5E7EB', boxShadow: '0 4px 16px rgba(15, 23, 42, 0.05)' }}
+            >
                 <div className="mx-auto">
-                <div className="flex justify-between h-14 items-center">
+                    <div className="flex justify-between h-[50px] items-center">
                     <div className="flex items-center">
                         <Link to="/" className="flex-shrink-0 flex items-center transform hover:scale-[1.02] transition-transform">
                             <span className="text-xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 text-transparent bg-clip-text">JobConnect</span>
