@@ -4,6 +4,15 @@ import { useAuth } from '../context/AuthContext';
 import { LogOut, Briefcase, MoreVertical, Menu, X } from 'lucide-react';
 import api from '../api/axios';
 
+const getInitials = (name) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+};
+
 const Navbar = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
@@ -87,8 +96,9 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-6xl z-50 bg-white/70 backdrop-blur-md border border-white/20 shadow-lg shadow-indigo-950/5 rounded-full px-6 transition-all duration-300">
-            <div className="mx-auto">
+        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 mt-4 relative z-50">
+            <nav className="bg-white border border-gray-150/80 shadow-sm rounded-2xl px-6 transition-all duration-300">
+                <div className="mx-auto">
                 <div className="flex justify-between h-14 items-center">
                     <div className="flex items-center">
                         <Link to="/" className="flex-shrink-0 flex items-center transform hover:scale-[1.02] transition-transform">
@@ -98,8 +108,11 @@ const Navbar = () => {
                     <div className="hidden md:flex items-center space-x-2">
                         {user ? (
                             <>
-                                <Link to="/profile" className="text-gray-600 hover:text-indigo-600 font-semibold px-3 py-1.5 rounded-full hover:bg-indigo-50/50 text-sm transition-all">
-                                    {user.name}
+                                <Link to="/profile" className="flex items-center gap-2 text-gray-750 hover:text-indigo-650 font-semibold px-3 py-1.5 rounded-full hover:bg-indigo-50/50 text-sm transition-all">
+                                    <span className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-650 text-white text-[11px] flex items-center justify-center font-extrabold shadow-sm uppercase shrink-0">
+                                        {getInitials(user.name)}
+                                    </span>
+                                    <span>{user.name}</span>
                                 </Link>
                                 {user.role === 'RECRUITER' ? (
                                     <>
@@ -184,8 +197,11 @@ const Navbar = () => {
                 <div className="absolute top-16 left-0 right-0 md:hidden bg-white/95 backdrop-blur-md border border-gray-100 rounded-2xl p-4 space-y-1 shadow-xl shadow-indigo-950/10 animate-fade-in z-50">
                     {user ? (
                         <>
-                            <div className="px-3 py-2 text-sm font-semibold text-gray-900 border-b border-gray-100 mb-2">
-                                Welcome, {user.name}
+                            <div className="px-3 py-2 text-sm font-semibold text-gray-900 border-b border-gray-100 mb-2 flex items-center gap-2">
+                                <span className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-650 text-white text-[11px] flex items-center justify-center font-bold shadow-sm uppercase shrink-0">
+                                    {getInitials(user.name)}
+                                </span>
+                                <span>{user.name}</span>
                             </div>
                             <Link
                                 to="/profile"
@@ -292,6 +308,7 @@ const Navbar = () => {
                 </div>
             )}
         </nav>
+    </div>
     );
 };
 
