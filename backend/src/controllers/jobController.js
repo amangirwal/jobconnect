@@ -16,6 +16,15 @@ exports.createJob = async (req, res) => {
     try {
         const data = jobSchema.parse(req.body);
 
+        // Fetch recruiter details to get official company details
+        const recruiter = await prisma.user.findUnique({
+            where: { id: req.user.userId }
+        });
+
+        if (!recruiter || !recruiter.companyName) {
+            return res.status(400).json({ message: 'You must complete your profile (Company Name) before posting a job.' });
+        }
+
         let skillsRequired = [];
         if (data.skillsRequired) {
             skillsRequired = JSON.parse(data.skillsRequired);
@@ -24,7 +33,7 @@ exports.createJob = async (req, res) => {
         const job = await prisma.job.create({
             data: {
                 title: data.title,
-                company: data.company,
+                company: recruiter.companyName, // Force official company name from profile
                 description: data.description,
                 location: data.location,
                 salary: data.salary,
