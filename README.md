@@ -1,5 +1,5 @@
 # JobConnect 💼⚡
-
+live - https://jobconnect-aman.vercel.app/
 JobConnect is a premium, modern full-stack Job Portal web application built with the MERN/PRN stack (MySQL + Prisma ORM, Express.js, React, Node.js). 
 
 Featuring a highly polished, responsive interface, the platform offers dynamic search query cards, live applicant messaging, dynamic initials badges, and secure role-based access control.
