@@ -1,122 +1,117 @@
-# JobConnect 
+# JobConnect 💼⚡
 
-A full-stack Job Portal application built with the MERN stack (MySQL, Express, React, Node.js).
+JobConnect is a premium, modern full-stack Job Portal web application built with the MERN/PRN stack (MySQL + Prisma ORM, Express.js, React, Node.js). 
 
-## Features
+Featuring a highly polished, responsive interface, the platform offers dynamic search query cards, live applicant messaging, dynamic initials badges, and secure role-based access control.
 
-- **Authentication**: Role-based (Candidate & Recruiter) signup and login with JWT.
-- **Job Posting**: Recruiters can create, update, and delete jobs.
-- **Job Listing**: Publicly accessible job board.
-- **Applications**: Candidates can apply to jobs; Recruiters can view applications for their posts.
-- **Dashboards**: Dedicated dashboards for Candidates (Applied Jobs) and Recruiters (Posted Jobs).
-- **Responsive UI**: Built with Tailwind CSS.
+---
 
-## Tech Stack
+## ✨ Features
 
-- **Frontend**: React (Vite), Tailwind CSS, Axios, React Router
-- **Backend**: Node.js, Express.js, Prisma ORM
-- **Database**: MySQL
+- **🔐 Robust Auth & Email Verification**: Role-based (Candidate & Recruiter) registration with JWT token management, password resets, and dynamic email verification OTP codes.
+- **💼 Controlled Job Posting**: Recruiters can only post job openings for their registered profile company. The backend force-overwrites recruiter details to prevent API request tampering.
+- **🗑️ Safe Cascade Deletions**: Deleting a job automatically cleans up all associated chat messages, applicant chat rooms, and application tracking objects to avoid database foreign key conflicts.
+- **📊 Real-time Messaging System**: Live interactive chat channels inside candidate applications for instant coordinator communication.
+- **🔍 Advanced Unified Search Grid**: Real-time filtering by keyword, location, and job type with zero placeholder clipping and responsive column stacking.
+- **🎨 Glassmorphic UI & Animations**: Built using Tailwind CSS, featuring floating glass layout structures, responsive split-column job detail panels, and soft vector animations.
 
-## Prerequisites
+---
 
-Before running the project, ensure you have the following installed:
+## 🛠️ Tech Stack
 
+- **Frontend**: React (Vite), Tailwind CSS v4, Lucide Icons, Axios, React Router Dom
+- **Backend**: Node.js, Express.js, Prisma ORM, Nodemailer, Brevo SMTP client
+- **Database**: MySQL Server
+
+---
+
+## 🚀 Local Installation & Setup
+
+### Prerequisites
+
+Make sure you have the following installed on your machine:
 - [Node.js](https://nodejs.org/) (v18 or higher)
-- [MySQL Server](https://dev.mysql.com/downloads/installer/) (Workbench recommended for easy management)
+- [MySQL Server](https://dev.mysql.com/downloads/installer/) (Port `3306`)
 - [Git](https://git-scm.com/)
 
-## Setup Instructions
+---
 
-Follow these steps to set up and run the project locally.
+### Step 1: Database Setup
 
-## Setup Instructions
-
-### Database Setup
-
-1. Open your MySQL terminal or Workbench.
-2. Create the database:
+1. Open your MySQL terminal or Workbench tool.
+2. Initialize a new database instance for the project:
    ```sql
    CREATE DATABASE jobportal;
    ```
 
-### 1. Clone Repository
+---
+
+### Step 2: Clone the Repository
 
 ```bash
 git clone https://github.com/amangirwal/jobconnect.git
 cd jobconnect
 ```
-### 2. Backend Setup
+
+---
+
+### Step 3: Backend Configuration
 
 1. Navigate to the backend directory:
    ```bash
    cd backend
    ```
-
-2. Install dependencies:
+2. Install package dependencies:
    ```bash
    npm install
    ```
-
-3. Configure Environment Variables:
-   - Create a `.env` file in the `backend` directory.
-   - Copy the following content and update `DB_PASSWORD` (and `DB_USER` if different from root):
-
+3. Configure environment variables. Create a `.env` file in the `backend/` folder:
    ```env
    # Database connection string
-   # Format: mysql://USER:PASSWORD@HOST:PORT/DATABASE
-   DATABASE_URL="mysql://root:password@localhost:3306/jobportal"
+   DATABASE_URL="mysql://root:YOUR_PASSWORD@localhost:3306/jobportal"
 
-   # JWT Secret for authentication
-   JWT_SECRET="your_super_secret_key_change_this"
+   # JWT Auth settings
+   JWT_SECRET="your_custom_jwt_signing_secret_here"
 
-   # Server Port
+   # Server listening port
    PORT=3000
    ```
-
-4. Run Database Migrations (Prisma):
-   This will create the necessary tables in your MySQL database.
+4. Run Database Migrations using Prisma ORM:
    ```bash
    npx prisma migrate dev --name init
    ```
-
-5. Start the Backend Server:
+5. Spin up the backend API server:
    ```bash
    npm run dev
    ```
-   The server should now be running on `http://localhost:3000`.
+   The API server will listen on `http://localhost:3000`.
 
-### 3. Frontend Setup
+---
+
+### Step 4: Frontend Configuration
 
 1. Open a new terminal and navigate to the frontend directory:
    ```bash
-   cd frontend
+   cd ../frontend
    ```
-
 2. Install dependencies:
    ```bash
    npm install
    ```
-
-
-4. Start the Frontend Application:
+3. Start the Vite React development server:
    ```bash
    npm run dev
    ```
-   The application will open at `http://localhost:5173`.
+   The user interface will be accessible at `http://localhost:5173`.
 
-## Troubleshooting
+---
 
-- **Database Connection Error**:
-  - Ensure MySQL service is running.
-  - Verify credentials in `backend/.env` are correct.
-  - Check if the database `jobportal` exists (`SHOW DATABASES;`).
+## 📋 Troubleshooting
 
-- **Prisma Migration Fails**:
-  - Try resetting the prisma client: `npx prisma generate`.
-  - Ensure no other process is using port 3306.
-
-- **CORS Errors**:
-  - Ensure the backend is running and accessible.
-  - Check if the frontend requests are pointing to the correct backend URL.
-
-
+- **MySQL Database Connection Issue**:
+  - Verify that the local MySQL service is active and listening on port `3306`.
+  - Double-check database username, password, and port in `backend/.env`'s `DATABASE_URL`.
+- **Prisma Client Issues**:
+  - Run `npx prisma generate` to rebuild the local Prisma client mappings if database schema changes are made.
+- **Port Conflict**:
+  - If port `3000` is already in use by another app, you can change the `PORT` key inside `backend/.env`.
