@@ -119,7 +119,7 @@ exports.getAllJobs = async (req, res) => {
 
         const jobs = await prisma.job.findMany({
             where,
-            include: { recruiter: { select: { name: true, email: true, profilePicture: true } } },
+            include: { recruiter: { select: { name: true, email: true, profilePicture: true, companyWebsite: true } } },
             orderBy: { createdAt: 'desc' },
         });
         res.json(jobs);
@@ -134,7 +134,7 @@ exports.getJobById = async (req, res) => {
         const { id } = req.params;
         const job = await prisma.job.findUnique({
             where: { id },
-            include: { recruiter: { select: { name: true, email: true } } },
+            include: { recruiter: { select: { name: true, email: true, profilePicture: true, companyWebsite: true } } },
         });
 
         if (!job) {

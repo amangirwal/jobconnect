@@ -165,7 +165,19 @@ const Landing = () => {
                                                 <h3 className="text-lg font-bold text-gray-900 group-hover:text-indigo-600 transition-colors truncate">
                                                     {job.title}
                                                 </h3>
-                                                <p className="text-sm text-gray-500 font-medium mt-1 truncate">{job.company}</p>
+                                                {job.recruiter?.companyWebsite ? (
+                                                     <a
+                                                         href={job.recruiter.companyWebsite.startsWith('http') ? job.recruiter.companyWebsite : `https://${job.recruiter.companyWebsite}`}
+                                                         target="_blank"
+                                                         rel="noopener noreferrer"
+                                                         onClick={(e) => e.stopPropagation()}
+                                                         className="text-sm text-indigo-600 hover:text-indigo-800 hover:underline font-semibold mt-1 inline-flex items-center gap-0.5 relative z-10"
+                                                     >
+                                                         {job.company} ↗
+                                                     </a>
+                                                 ) : (
+                                                     <p className="text-sm text-gray-500 font-medium mt-1 truncate">{job.company}</p>
+                                                 )}
                                             </div>
                                             {job.recruiter?.profilePicture ? (
                                                 <img src={`${SERVER_URL}/${job.recruiter.profilePicture}`} alt="Company" className="h-12 w-12 rounded-lg object-cover shadow-sm border border-gray-100 shrink-0" />

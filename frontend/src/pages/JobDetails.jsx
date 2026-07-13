@@ -65,7 +65,21 @@ const JobDetails = () => {
                     <div className="flex justify-between items-start">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">{job.title}</h1>
-                            <p className="mt-2 text-lg text-indigo-600 font-medium">{job.company}</p>
+                            {job.recruiter?.companyWebsite ? (
+                                <a
+                                    href={job.recruiter.companyWebsite.startsWith('http') ? job.recruiter.companyWebsite : `https://${job.recruiter.companyWebsite}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-2 inline-flex items-center gap-1 text-lg text-indigo-600 hover:text-indigo-800 hover:underline font-bold"
+                                >
+                                    {job.company}
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-indigo-500">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                    </svg>
+                                </a>
+                            ) : (
+                                <p className="mt-2 text-lg text-indigo-600 font-medium">{job.company}</p>
+                            )}
                         </div>
                         {job.recruiter?.profilePicture && (
                             <img src={`${SERVER_URL}/${job.recruiter.profilePicture}`} alt="Company" className="h-16 w-16 rounded-full object-cover shadow-sm bg-gray-50" />
