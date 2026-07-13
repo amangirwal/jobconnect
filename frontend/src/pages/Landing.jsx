@@ -231,75 +231,115 @@ const Landing = () => {
                     </div>
                 ) : (
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {jobs.map((job, index) => (
-                            <Link
-                                to={`/jobs/${job.id}`}
-                                key={job.id}
-                                className="block group h-full"
-                            >
-                                <div
-                                    className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200/80 hover:border-indigo-200 overflow-hidden h-full flex flex-col transform hover:-translate-y-1 relative p-6"
-                                    style={{ animationDelay: `${index * 0.05}s` }}
+                        {jobs.map((job, index) => {
+                            let skills = [];
+                            try {
+                                if (job.skillsRequired) {
+                                    skills = JSON.parse(job.skillsRequired);
+                                }
+                            } catch (e) {
+                                if (typeof job.skillsRequired === 'string') {
+                                    skills = job.skillsRequired.split(',').map(s => s.trim()).filter(Boolean);
+                                }
+                            }
+                            const displayedSkills = skills.slice(0, 3);
+
+                            return (
+                                <Link
+                                    to={`/jobs/${job.id}`}
+                                    key={job.id}
+                                    className="block group h-full"
                                 >
-                                    <div className="flex justify-between items-start gap-4 mb-4">
-                                        <div className="flex-grow min-w-0">
-                                            {job.recruiter?.companyWebsite ? (
-                                                <a
-                                                    href={job.recruiter.companyWebsite.startsWith('http') ? job.recruiter.companyWebsite : `https://${job.recruiter.companyWebsite}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="text-xs font-bold uppercase tracking-wider text-indigo-600 hover:text-indigo-800 hover:underline block mb-1 z-10 relative"
+                                    <div
+                                        className="bg-white rounded-2xl transition-all duration-200 hover:border-purple-200 hover:-translate-y-[3px] hover:shadow-md p-6 flex flex-col h-full relative"
+                                        style={{ border: '1px solid #E5E7EB', animationDelay: `${index * 0.05}s` }}
+                                    >
+                                        {/* TOP ROW */}
+                                        <div className="flex justify-between items-center gap-3 mb-3">
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                {job.recruiter?.profilePicture ? (
+                                                    <img
+                                                        src={`${SERVER_URL}/${job.recruiter.profilePicture}`}
+                                                        alt={`${job.company} logo`}
+                                                        onError={(e) => {
+                                                            e.target.onerror = null;
+                                                            e.target.style.display = 'none';
+                                                            e.target.nextSibling.style.display = 'flex';
+                                                        }}
+                                                        className="h-7 w-7 rounded-lg object-cover border border-gray-150 shrink-0"
+                                                    />
+                                                ) : null}
+                                                <div 
+                                                    style={{ display: job.recruiter?.profilePicture ? 'none' : 'flex' }}
+                                                    className="h-7 w-7 rounded-lg bg-purple-50 items-center justify-center text-purple-700 font-extrabold text-xs shrink-0"
                                                 >
-                                                    {job.company} ↗
-                                                </a>
-                                            ) : (
-                                                <span className="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-1">{job.company}</span>
-                                            )}
-                                            <h3 className="text-lg font-black text-gray-900 group-hover:text-indigo-605 transition-colors truncate">
-                                                {job.title}
-                                            </h3>
+                                                    {job.company.charAt(0).toUpperCase()}
+                                                </div>
+
+                                                {job.recruiter?.companyWebsite ? (
+                                                    <a
+                                                        href={job.recruiter.companyWebsite.startsWith('http') ? job.recruiter.companyWebsite : `https://${job.recruiter.companyWebsite}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="text-xs font-semibold text-gray-500 hover:text-indigo-650 hover:underline truncate"
+                                                    >
+                                                        {job.company}
+                                                    </a>
+                                                ) : (
+                                                    <span className="text-xs font-semibold text-gray-500 truncate">{job.company}</span>
+                                                )}
+                                            </div>
                                         </div>
-                                        {job.recruiter?.profilePicture ? (
-                                            <img
-                                                src={`${SERVER_URL}/${job.recruiter.profilePicture}`}
-                                                alt={`${job.company} logo`}
-                                                onError={(e) => { e.target.onerror = null; e.target.src = ''; e.target.className = 'hidden'; }}
-                                                className="h-11 w-11 rounded-xl object-cover shadow-sm border border-gray-100 shrink-0"
-                                            />
-                                        ) : (
-                                            <div className="h-11 w-11 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-650 font-black text-lg shrink-0">
-                                                {job.company.charAt(0).toUpperCase()}
+
+                                        {/* MAIN CONTENT */}
+                                        <h3 className="text-[18px] font-bold text-gray-900 leading-snug line-clamp-2 mb-2 group-hover:text-indigo-600 transition-colors">
+                                            {job.title}
+                                        </h3>
+
+                                        {/* METADATA */}
+                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-3 text-[13px] text-gray-500">
+                                            <span className="flex items-center gap-1.5">
+                                                <MapPin className="h-4 w-4 text-gray-400 shrink-0" />
+                                                {job.location}
+                                            </span>
+                                            <span className="flex items-center gap-1.5">
+                                                <Briefcase className="h-4 w-4 text-gray-400 shrink-0" />
+                                                {job.jobType.replace('_', ' ')}
+                                            </span>
+                                        </div>
+
+                                        {/* TAGS */}
+                                        {displayedSkills.length > 0 && (
+                                            <div className="flex flex-wrap gap-1.5 mb-4">
+                                                {displayedSkills.map((skill, idx) => (
+                                                    <span key={idx} className="bg-purple-50/60 text-purple-750 border border-purple-100/50 rounded-full px-2.5 py-0.5 text-xs font-semibold leading-none">
+                                                        {skill}
+                                                    </span>
+                                                ))}
                                             </div>
                                         )}
-                                    </div>
 
-                                    <p className="text-gray-500 text-xs line-clamp-2 leading-relaxed mb-4 flex-grow">
-                                        {job.description}
-                                    </p>
-
-                                    <div className="flex flex-wrap gap-2 mb-4">
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-50 text-green-700 border border-green-100">
-                                            {job.jobType.replace('_', ' ')}
-                                        </span>
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100">
-                                            {job.experienceLevel.replace('_', ' ')}
-                                        </span>
+                                        {/* BOTTOM ROW */}
+                                        <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+                                            <div className="flex flex-col text-left">
+                                                <span className="text-green-700 text-sm font-extrabold flex items-center">
+                                                    <IndianRupee className="h-3.5 w-3.5 mr-0.5 text-green-600 animate-pulse" />
+                                                    {job.salary || 'Competitive'}
+                                                </span>
+                                                <span className="text-[10px] text-gray-400 mt-0.5">
+                                                    Posted {new Date(job.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                                </span>
+                                            </div>
+                                            <span className="text-sm font-bold text-indigo-650 group-hover:text-indigo-805 transition-colors flex items-center gap-1">
+                                                View Details →
+                                            </span>
+                                        </div>
                                     </div>
-
-                                    <div className="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center text-sm font-semibold text-gray-500">
-                                        <span className="flex items-center text-gray-500 text-xs">
-                                            <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-                                            {job.location}
-                                        </span>
-                                        <span className="text-green-700 text-sm font-extrabold flex items-center">
-                                            <IndianRupee className="h-4 w-4 mr-0.5 text-green-600 animate-pulse" />
-                                            {job.salary || 'Competitive'}
-                                        </span>
-                                    </div>
-                                </div>
-                            </Link>
-                        ))}
+                                </Link>
+                            );
+                        })}
+                    </div>
                     </div>
                 )}
             </div>
