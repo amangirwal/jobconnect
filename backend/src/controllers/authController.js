@@ -49,8 +49,8 @@ exports.signup = async (req, res) => {
             },
         });
 
-        // Send OTP
-        await sendOtpEmail(email, otp);
+        // Send OTP in background to prevent HTTP gateway timeout
+        sendOtpEmail(email, otp).catch(err => console.error("Background OTP send failed", err));
 
         res.status(201).json({
             message: 'Signup successful. A verification OTP has been sent to your Gmail.',
@@ -183,7 +183,8 @@ exports.resendOtp = async (req, res) => {
             }
         });
 
-        await sendOtpEmail(email, otp);
+        // Send OTP in background to prevent HTTP gateway timeout
+        sendOtpEmail(email, otp).catch(err => console.error("Background OTP resend failed", err));
 
         res.json({ message: 'A new verification OTP has been sent to your Gmail.' });
     } catch (error) {
@@ -219,7 +220,8 @@ exports.forgotPassword = async (req, res) => {
             }
         });
 
-        await sendResetOtpEmail(email, otp);
+        // Send Reset OTP in background to prevent HTTP gateway timeout
+        sendResetOtpEmail(email, otp).catch(err => console.error("Background Reset OTP send failed", err));
 
         res.json({ message: 'A password reset OTP has been sent to your Gmail.', email });
     } catch (error) {
