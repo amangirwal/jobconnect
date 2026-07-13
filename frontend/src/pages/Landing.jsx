@@ -3,7 +3,7 @@ import { SERVER_URL } from '../api/axios';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getAllJobs } from '../api/services';
-import { Search, MapPin, Briefcase, TrendingUp, Clock, DollarSign } from 'lucide-react';
+import { Search, MapPin, Briefcase, TrendingUp, Clock, IndianRupee } from 'lucide-react';
 
 const Landing = () => {
     const { user } = useAuth();
@@ -196,7 +196,7 @@ const Landing = () => {
                                                 {job.location}
                                             </span>
                                             <span className="flex items-center text-gray-900">
-                                                <DollarSign className="h-4 w-4 mr-0.5 text-green-600" />
+                                                <IndianRupee className="h-4 w-4 mr-0.5 text-green-600" />
                                                 {job.salary || 'Competitive'}
                                             </span>
                                         </div>

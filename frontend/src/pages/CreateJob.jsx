@@ -174,7 +174,7 @@ const CreateJob = () => {
                         value={formData.salary}
                         onChange={handleChange}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 border p-2"
-                        placeholder="e.g. $100k - $120k"
+                        placeholder="e.g. ₹8 LPA - ₹12 LPA"
                     />
                 </div>
                 <div>

@@ -206,9 +206,27 @@ exports.deleteJob = async (req, res) => {
             return res.status(403).json({ message: 'Access denied: You can only delete your own jobs' });
         }
 
+        // Fetch all application IDs for this job to delete their messages first
+        const applications = await prisma.application.findMany({
+            where: { jobId: id },
+            select: { id: true }
+        });
+        const appIds = applications.map(app => app.id);
+
+        // Delete all messages in these applications
+        await prisma.message.deleteMany({
+            where: { applicationId: { in: appIds } }
+        });
+
+        // Delete all applications for this job
+        await prisma.application.deleteMany({
+            where: { jobId: id }
+        });
+
+        // Now safe to delete the job
         await prisma.job.delete({ where: { id } });
 
-        res.json({ message: 'Job deleted successfully' });
+        res.json({ message: 'Job and all its applications deleted successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
