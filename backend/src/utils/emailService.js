@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const axios = require('axios');
 
 const getTransporter = () => {
     return nodemailer.createTransport({
@@ -38,16 +39,31 @@ exports.sendResetOtpEmail = async (email, otp) => {
 
 exports.sendEmail = async (mailOptions) => {
     try {
-        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        if (process.env.BREVO_API_KEY) {
+            // Send using Brevo HTTP API (Port 443, never blocked by cloud hosts)
+            await axios.post('https://api.brevo.com/v3/smtp/email', {
+                sender: { name: 'JobConnect', email: process.env.EMAIL_USER || 'noreply@jobconnect.com' },
+                to: [{ email: mailOptions.to }],
+                subject: mailOptions.subject,
+                htmlContent: mailOptions.html || mailOptions.text
+            }, {
+                headers: {
+                    'api-key': process.env.BREVO_API_KEY,
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log(`Email sent via Brevo HTTP API to ${mailOptions.to}`);
+        } else if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+            // SMTP fallback for local development
             const transporter = getTransporter();
             await transporter.sendMail(mailOptions);
-            console.log(`Email sent to ${mailOptions.to}`);
+            console.log(`Email sent via SMTP to ${mailOptions.to}`);
         } else {
             console.log(`[DEV MODE] Mock Email to ${mailOptions.to}`);
             console.log(`Subject: ${mailOptions.subject}`);
             console.log(`Body: ${mailOptions.text || mailOptions.html}`);
         }
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error('Error sending email:', error.response?.data || error.message || error);
     }
 };
